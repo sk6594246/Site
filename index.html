@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>config-site</title>
+<meta name="description" content="Configurable multi-user microsite template" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c10; --card: rgba(18,22,30,.78); --border: rgba(255,255,255,.1);
+  --gold: #e5c158; --gold-dim: rgba(229,193,88,.35); --text: #f0f3f8; --muted: #9aa4b5; --dim: #64748b;
+  --font-h: 'Cinzel', serif; --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --radius: 16px; --pad: clamp(1.1rem, 4vw, 2rem); --section: clamp(3rem, 9vw, 6rem);
+}
+html.theme-light {
+  --bg: #f7f5f0; --card: rgba(255,255,255,.9); --border: rgba(0,0,0,.08);
+  --gold: #9a741a; --gold-dim: rgba(154,116,26,.3); --text: #1a1a1a; --muted: #6e695f; --dim: #8a8478;
+}
+html.theme-blue {
+  --bg: #0a1a2f; --card: rgba(18,26,47,.78); --border: rgba(255,255,255,.1);
+  --gold: #4a90e2; --gold-dim: rgba(74,144,226,.35); --text: #e0e8f5; --muted: #aab8c8; --dim: #7a8a99;
+}
+html.theme-purple {
+  --bg: #1a0a2f; --card: rgba(26,10,47,.78); --border: rgba(255,255,255,.1);
+  --gold: #9b59b6; --gold-dim: rgba(155,89,182,.35); --text: #f0e6f8; --muted: #c8a8d3; --dim: #997a8a;
+}
+html.theme-green {
+  --bg: #0a2f1a; --card: rgba(18,47,26,.78); --border: rgba(255,255,255,.1);
+  --gold: #2ecc71; --gold-dim: rgba(46,204,113,.35); --text: #e8f5e8; --muted: #b8c8b8; --dim: #7a997a;
+}
+html.theme-orange {
+  --bg: #2f1a0a; --card: rgba(47,26,18,.78); --border: rgba(255,255,255,.1);
+  --gold: #f39c12; --gold-dim: rgba(243,156,18,.35); --text: #f5f0e8; --muted: #c8b8a8; --dim: #998a7a;
+}
+html.theme-red {
+  --bg: #2f0a0a; --card: rgba(47,18,18,.78); --border: rgba(255,255,255,.1);
+  --gold: #e74c3c; --gold-dim: rgba(231,76,60,.35); --text: #f8e8e8; --muted: #c8a8a8; --dim: #997a7a;
+}
+
+/* Layout presets */
+body.layout-landing .container { max-width: 1400px; }
+body.layout-portfolio .container { max-width: 1200px; }
+body.layout-business .container { max-width: 1000px; }
+body.layout-blog .container { max-width: 800px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-b); line-height: 1.6; min-height: 100vh; }
+h1,h2,h3,.brand { font-family: var(--font-h); letter-spacing: .03em; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 var(--pad); }
+.glass { background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: var(--radius); }
+.btn { display: inline-flex; align-items: center; gap: .45rem; padding: .7rem 1.2rem; border-radius: 999px; border: none; cursor: pointer; font: 600 .75rem var(--font-b); letter-spacing: .06em; text-transform: uppercase; text-decoration: none; transition: .2s; }
+.btn-primary { background: linear-gradient(135deg,#e5c158,#a68128); color: #0a0c10; }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.section { padding: var(--section) 0; border-top: 1px solid var(--border); }
+.section:first-of-type { border-top: none; }
+.label { font-size: .7rem; text-transform: uppercase; letter-spacing: .18em; color: var(--gold); font-weight: 600; margin-bottom: .5rem; }
+#siteNav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 1rem 0; transition: .25s; border-bottom: 1px solid transparent; }
+#siteNav.scrolled { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(12px); border-bottom-color: var(--border); padding: .7rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.nav-brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; color: inherit; }
+.nav-logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg,#e5c158,#a68128); color: #0a0c10; display: flex; align-items: center; justify-content: center; font-family: var(--font-h); font-weight: 700; }
+.nav-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+.nav-links a { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); text-decoration: none; }
+.nav-links a:hover { color: var(--gold); }
+.icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
+.hero { min-height: 78vh; display: flex; align-items: flex-end; padding: 7rem 0 3rem; position: relative; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: .42; }
+.hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg), transparent 55%, color-mix(in srgb, var(--bg) 65%, transparent)); }
+.hero-content { position: relative; z-index: 1; max-width: 640px; }
+.hero-content h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); line-height: 1.1; margin: .4rem 0 1rem; }
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.gallery-card { aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; position: relative; }
+.gallery-card img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-card .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: .75rem; background: linear-gradient(transparent, rgba(0,0,0,.75)); color: #fff; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+.cat-bar { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.25rem; }
+.cat-btn { padding: .4rem .9rem; border-radius: 999px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; font-family: inherit; }
+.cat-btn.active { border-color: var(--gold); color: var(--text); }
+.album-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; align-items: center; }
+@media (max-width: 800px) { .album-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
+.album-photo { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4/3; border: 1px solid var(--border); }
+.album-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.service-card, .term-card, .t-card { padding: 1.25rem; }
+.service-card .price { color: var(--gold); font-weight: 600; margin: .35rem 0 .6rem; }
+.service-card ul { list-style: none; color: var(--muted); font-size: .85rem; }
+.service-card li { padding: .2rem 0 .2rem .9rem; position: relative; }
+.service-card li::before { content: '•'; position: absolute; left: 0; color: var(--gold); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.5rem; }
+@media (max-width: 800px) { .contact-grid { grid-template-columns: 1fr; } }
+input, textarea, select { width: 100%; padding: .65rem .8rem; border-radius: 8px; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 80%, #000); color: var(--text); font: inherit; margin-bottom: .7rem; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold); }
+label { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .3rem; }
+footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-size: .75rem; border-top: 1px solid var(--border); }
+.fab { position: fixed; z-index: 60; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 90%, transparent); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#adminBtn { bottom: 1.4rem; right: 1.4rem; }
+#scrollTopBtn { bottom: 1.4rem; left: 1.4rem; opacity: 0; pointer-events: none; }
+#scrollTopBtn.show { opacity: 1; pointer-events: auto; }
+.modal { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.85); display: flex; align-items: flex-start; justify-content: center; padding: 3vh var(--pad); overflow-y: auto; opacity: 0; pointer-events: none; transition: .2s; }
+.modal.open { opacity: 1; pointer-events: auto; }
+#adminPanel { width: min(720px, 100%); max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); }
+.admin-head, .admin-foot { padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.admin-foot { border-bottom: none; border-top: 1px solid var(--border); }
+.admin-body { padding: 1.1rem 1.15rem; overflow-y: auto; flex: 1; }
+.tabs { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: 1rem; }
+.tab { padding: .35rem .7rem; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; font-family: inherit; }
+.tab.active { border-color: var(--gold); color: var(--gold); }
+.pane { display: none; } .pane.active { display: block; }
+.list-block { border: 1px solid var(--border); border-radius: 10px; padding: .75rem; margin-bottom: .65rem; }
+.muted { color: var(--muted); font-size: .85rem; }
+.err { color: #f87171; font-size: .8rem; margin-top: .5rem; }
+.ok { color: #4ade80; font-size: .8rem; }
+.hidden { display: none !important; }
+#bootScreen, #errorScreen { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+#lightbox { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.9); display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+#lightbox.open { display: flex; }
+#lightbox img { max-height: 80vh; max-width: 100%; object-fit: contain; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div id="bootScreen"><div><p class="label">config-site</p><p class="muted">Loading…</p></div></div>
+<div id="errorScreen" class="hidden"><div><p class="label">config-site</p><p id="errorMsg" class="muted">Site not found</p><p class="muted" style="margin-top:1rem;font-size:.8rem">Use /u/your-id or ?u=your-id</p></div></div>
+
+<div id="app" class="hidden">
+  <header id="siteNav">
+    <div class="container nav-inner">
+      <a href="#" class="nav-brand" id="navBrand">
+        <div class="nav-logo" id="navLogo">C</div>
+        <div>
+          <div class="brand" id="navTitle" style="font-size:1.05rem">Site</div>
+          <div id="navTagline" style="font-size:.65rem;color:var(--gold);letter-spacing:.12em;text-transform:uppercase">Microsite</div>
+        </div>
+      </a>
+      <nav class="nav-links" id="navLinks"></nav>
+      <button class="icon-btn" id="themeBtn" type="button" title="Theme">◐</button>
+      <select id="themeSelect" title="Color scheme">
+        <option value="">Default</option>
+        <option value="blue">Blue</option>
+        <option value="purple">Purple</option>
+        <option value="green">Green</option>
+        <option value="orange">Orange</option>
+        <option value="red">Red</option>
+      </select>
+    </div>
+  </header>
+  <main id="mainSections"></main>
+  <footer>
+    <div class="container">
+      <div class="brand" id="footerTitle" style="font-size:clamp(1.8rem,5vw,3rem);opacity:.35;margin-bottom:.5rem">SITE</div>
+      <p id="footerCopy">© config-site</p>
+    </div>
+  </footer>
+</div>
+
+<button class="fab" id="scrollTopBtn" type="button">↑</button>
+<button class="fab" id="adminBtn" type="button" title="Admin">✎</button>
+
+<div id="lightbox"><img id="lightboxImg" alt="" /></div>
+
+<div class="modal" id="adminModal">
+  <div id="adminPanel">
+    <div class="admin-head">
+      <div>
+        <div class="label">Admin</div>
+        <div class="brand" style="font-size:.95rem">Site configuration</div>
+        <div class="muted" id="adminUserLabel" style="font-size:.75rem;margin-top:.2rem"></div>
+      </div>
+      <button class="icon-btn" id="adminClose" type="button">×</button>
+    </div>
+    <div class="admin-body">
+      <div id="pinStep">
+        <p class="muted" style="margin-bottom:.75rem">Enter this site’s admin <strong>password</strong> to unlock.</p>
+        <input id="pinInput" type="password" placeholder="Password" autocomplete="current-password" />
+        <button class="btn btn-primary" id="pinSubmit" type="button" style="width:100%;justify-content:center">Unlock</button>
+        <p id="pinError" class="err hidden"></p>
+      </div>
+      <div id="editorStep" class="hidden">
+        <div class="tabs" id="adminTabs">
+          <button type="button" class="tab active" data-pane="meta">Site</button>
+          <button type="button" class="tab" data-pane="sections">Sections</button>
+          <button type="button" class="tab" data-pane="texts">Texts</button>
+        </div>
+        <div class="pane active" data-pane="meta">
+          <label>Site title</label>
+          <input id="editMetaTitle" />
+          <label>Tagline</label>
+          <input id="editMetaTagline" />
+          <label>Footer title</label>
+          <input id="editFooterTitle" />
+          <label>Footer copyright</label>
+          <input id="editFooterCopy" />
+          <label>Layout preset</label>
+          <select id="editLayoutPreset">
+            <option value="">Default</option>
+            <option value="landing">Landing Page</option>
+            <option value="portfolio">Portfolio</option>
+            <option value="business">Business</option>
+            <option value="blog">Blog</option>
+          </select>
+          <p class="muted" style="margin-top:.5rem">Theme is toggled on the public page (saved in browser).</p>
+        </div>
+        <div class="pane" data-pane="sections">
+          <p class="muted" style="margin-bottom:.75rem">Each block is a section. Change type to replace hero/gallery/etc. with another element.</p>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+            <button type="button" class="btn btn-ghost" id="addSection">+ Add section</button>
+          </div>
+          <div id="editSections"></div>
+        </div>
+        <div class="pane" data-pane="texts">
+          <p class="muted" style="margin-bottom:.75rem;line-height:1.45">
+            <code>*text*</code> = <strong>bold</strong> · <code>_text_</code> = <em>italics</em><br/>
+            Example: <code>*KAAD* _PORTRAITS_</code>
+          </p>
+          <div id="editTexts"></div>
+        </div>
+      </div>
+    </div>
+    <div class="admin-foot hidden" id="adminFoot">
+      <button type="button" class="btn btn-primary" id="saveBtn" style="flex:1;justify-content:center">Save &amp; publish</button>
+      <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+    </div>
+    <p id="saveMsg" class="hidden" style="padding:0 1rem 1rem;text-align:center"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  /** Set after deploy, e.g. https://config-site-api.you.workers.dev */
+  const API_BASE = localStorage.getItem('config_site_api') || 'https://config-site-api.sk6594246.workers.dev';
+
+  const SECTION_TYPES = [
+    { value: 'hero', label: 'Hero' },
+    { value: 'text', label: 'Text block' },
+    { value: 'album', label: 'Featured album / media' },
+    { value: 'gallery', label: 'Gallery' },
+    { value: 'services', label: 'Services / cards' },
+    { value: 'terms', label: 'Terms / list' },
+    { value: 'testimonials', label: 'Testimonials' },
+    { value: 'contact', label: 'Contact' },
+  ];
+
+  function defaultSite() {
+    return {
+      meta: {
+        title: 'My Site',
+        tagline: 'Configurable microsite',
+        footerTitle: 'SITE',
+        footerCopyright: '© config-site',
+      },
+      texts: {},
+      sections: [
+        {
+          id: 'hero1',
+          type: 'hero',
+          settings: {
+            eyebrow: 'Welcome',
+            title: '*My* _Site_',
+            bio: 'Replace this hero with text, gallery, or any section type in admin.',
+            image: '',
+            ctaPrimary: 'Explore',
+            ctaPrimaryHref: '#sec-gallery1',
+            ctaSecondary: 'Contact',
+            ctaSecondaryHref: '#sec-contact1',
+          },
+        },
+        {
+          id: 'text1',
+          type: 'text',
+          settings: {
+            label: 'About',
+            heading: 'Fully *user* configured',
+            body: 'Every section is stored per user in KV. Change type to swap this block for a gallery, services list, or contact form.',
+          },
+        },
+        {
+          id: 'gallery1',
+          type: 'gallery',
+          settings: {
+            label: 'Gallery',
+            heading: 'Work',
+            categories: [{ name: 'All', photos: [] }],
+          },
+        },
+        {
+          id: 'services1',
+          type: 'services',
+          settings: {
+            label: 'Services',
+            heading: 'What I offer',
+            items: [
+              { title: 'Starter', price: 'Custom', description: 'Describe your offer', features: ['Feature one', 'Feature two'] },
+            ],
+          },
+        },
+        {
+          id: 'contact1',
+          type: 'contact',
+          settings: {
+            label: 'Contact',
+            heading: "Let's talk",
+            email: '',
+            phone: '',
+            whatsapp: '',
+            instagram: '',
+          },
+        },
+      ],
+    };
+  }
+
+  let userId = '';
+  let siteData = defaultSite();
+  let sessionToken = '';
+  let lightboxPhotos = [];
+
+  try {
+    if (localStorage.getItem('config-site-theme') === 'light') document.documentElement.classList.add('theme-light');
+  } catch (e) {}
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function renderMiniMarkdown(raw) {
+    let text = escapeHtml(raw == null ? '' : String(raw));
+    text = text.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+    text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+    text = text.replace(/\n/g, '<br>');
+    return text;
+  }
+
+  function resolveUserId() {
+    const path = location.pathname.replace(/\/+/g, '/');
+    let m = path.match(/\/u\/([a-zA-Z0-9_-]+)/);
+    if (m) return m[1].toLowerCase();
+    const q = new URLSearchParams(location.search).get('u');
+    if (q) return q.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    // hash route #/u/name
+    m = (location.hash || '').match(/#\/?u\/([a-zA-Z0-9_-]+)/);
+    if (m) return m[1].toLowerCase();
+    return '';
+  }
+
+  function apiUrl(path) {
+    return API_BASE.replace(/\/$/, '') + path;
+  }
+
+  async function loadSite() {
+    userId = resolveUserId();
+    const boot = document.getElementById('bootScreen');
+    const err = document.getElementById('errorScreen');
+    const app = document.getElementById('app');
+    if (!userId) {
+      boot.classList.add('hidden');
+      err.classList.remove('hidden');
+      document.getElementById('errorMsg').textContent = 'No user in URL. Open /u/your-id';
+      return;
+    }
+    document.getElementById('adminUserLabel').textContent = 'User: ' + userId;
+    try {
+      const res = await fetch(apiUrl('/api/site/' + encodeURIComponent(userId)));
+      if (res.status === 404) {
+        siteData = defaultSite();
+        siteData.meta.title = userId;
+      } else if (!res.ok) {
+        throw new Error('HTTP ' + res.status);
+      } else {
+        const data = await res.json();
+        siteData = normalizeSite(data);
+      }
+      boot.classList.add('hidden');
+      err.classList.add('hidden');
+      app.classList.remove('hidden');
+      renderAll();
+    } catch (e) {
+      console.error(e);
+      boot.classList.add('hidden');
+      // offline / API not ready — still show template for this user id
+      siteData = defaultSite();
+      siteData.meta.title = userId;
+      app.classList.remove('hidden');
+      renderAll();
+    }
+  }
+
+  function normalizeSite(data) {
+    const d = data && typeof data === 'object' ? data : {};
+    const base = defaultSite();
+    d.meta = Object.assign({}, base.meta, d.meta || {});
+    d.texts = d.texts && typeof d.texts === 'object' ? d.texts : {};
+    d.sections = Array.isArray(d.sections) && d.sections.length ? d.sections : base.sections;
+    d.sections = d.sections.map(function (s, i) {
+      return {
+        id: s.id || ('sec' + i),
+        type: s.type || 'text',
+        settings: s.settings && typeof s.settings === 'object' ? s.settings : {},
+      };
+    });
+    return d;
+  }
+
+  function t(key, fallback) {
+    if (siteData.texts && siteData.texts[key] != null && String(siteData.texts[key]).length) {
+      return String(siteData.texts[key]);
+    }
+    return fallback == null ? '' : String(fallback);
+  }
+
+  function applyTextStyle(el, key) {
+    if (!el) return;
+    const st = (siteData.texts && siteData.texts['style:' + key]) || {};
+    if (st.fontSize) el.style.setProperty('font-size', st.fontSize, 'important');
+    else el.style.removeProperty('font-size');
+    if (st.textAlign) el.style.textAlign = st.textAlign;
+    else el.style.removeProperty('text-align');
+  }
+
+  function setHtml(el, value, styleKey) {
+    if (!el) return;
+    el.innerHTML = renderMiniMarkdown(value);
+    if (styleKey) applyTextStyle(el, styleKey);
+  }
+
+  function renderAll() {
+    const meta = siteData.meta || {};
+    const title = t('meta.title', meta.title || userId);
+    const tagline = t('meta.tagline', meta.tagline || '');
+    setHtml(document.getElementById('navTitle'), title, 'meta.title');
+    setHtml(document.getElementById('navTagline'), tagline, 'meta.tagline');
+    document.getElementById('navLogo').textContent = (String(title).replace(/\*/g, '').replace(/_/g, '').trim()[0] || 'C').toUpperCase();
+    document.title = String(title).replace(/\*/g, '').replace(/_/g, '') || 'config-site';
+    setHtml(document.getElementById('footerTitle'), t('meta.footerTitle', meta.footerTitle || 'SITE'), 'meta.footerTitle');
+    setHtml(document.getElementById('footerCopy'), t('meta.footerCopyright', meta.footerCopyright || ''), 'meta.footerCopyright');
+
+    // Add layout preset class to body
+    const layoutPreset = meta.layoutPreset || '';
+    document.body.className = '';
+    if (layoutPreset) {
+        document.body.classList.add('layout-' + layoutPreset);
+    }
+
+    const main = document.getElementById('mainSections');
+    main.innerHTML = '';
+    const nav = document.getElementById('navLinks');
+    nav.innerHTML = '';
+
+    (siteData.sections || []).forEach(function (sec, idx) {
+      const wrap = document.createElement('section');
+      wrap.className = 'section';
+      wrap.id = 'sec-' + sec.id;
+      if (sec.type === 'hero') wrap.className = 'hero';
+      wrap.innerHTML = '<div class="container" data-sec-inner></div>';
+      const inner = wrap.querySelector('[data-sec-inner]');
+      renderSection(inner, sec, wrap);
+      main.appendChild(wrap);
+
+      const label = (sec.settings && (sec.settings.heading || sec.settings.title || sec.settings.label || sec.type)) || sec.type;
+      const a = document.createElement('a');
+      a.href = '#sec-' + sec.id;
+      a.textContent = String(label).replace(/\*/g, '').replace(/_/g, '').slice(0, 24);
+      nav.appendChild(a);
+    });
+  }
+
+  function renderSection(inner, sec, wrap) {
+    const s = sec.settings || {};
+    switch (sec.type) {
+      case 'hero':
+        wrap.innerHTML = '';
+        const bg = document.createElement('div');
+        bg.className = 'hero-bg';
+        if (s.image) bg.innerHTML = '<img src="' + escapeHtml(s.image) + '" alt="" />';
+        const content = document.createElement('div');
+        content.className = 'container hero-content';
+        content.innerHTML =
+          '<p class="label" data-k="eyebrow"></p>' +
+          '<h1 data-k="title"></h1>' +
+          '<p class="muted" data-k="bio" style="margin-bottom:1.2rem"></p>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:.6rem">' +
+          (s.ctaPrimary ? '<a class="btn btn-primary" href="' + escapeHtml(s.ctaPrimaryHref || '#') + '" data-k="ctaPrimary"></a>' : '') +
+          (s.ctaSecondary ? '<a class="btn btn-ghost" href="' + escapeHtml(s.ctaSecondaryHref || '#') + '" data-k="ctaSecondary"></a>' : '') +
+          '</div>';
+        setHtml(content.querySelector('[data-k="eyebrow"]'), s.eyebrow || '', sec.id + '.eyebrow');
+        setHtml(content.querySelector('[data-k="title"]'), s.title || '', sec.id + '.title');
+        setHtml(content.querySelector('[data-k="bio"]'), s.bio || '', sec.id + '.bio');
+        const cp = content.querySelector('[data-k="ctaPrimary"]');
+        const cs = content.querySelector('[data-k="ctaSecondary"]');
+        if (cp) setHtml(cp, s.ctaPrimary || '', sec.id + '.ctaPrimary');
+        if (cs) setHtml(cs, s.ctaSecondary || '', sec.id + '.ctaSecondary');
+        wrap.appendChild(bg);
+        wrap.appendChild(content);
+        break;
+
+      case 'text':
+        inner.innerHTML = '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:.75rem"></h2><div class="muted" data-k="body"></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || '', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        setHtml(inner.querySelector('[data-k="body"]'), s.body || '', sec.id + '.body');
+        break;
+
+      case 'album':
+        inner.innerHTML =
+          '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2>' +
+          '<div class="album-grid glass" style="padding:1rem">' +
+          '<div class="album-photo"><img data-img alt="" /></div>' +
+          '<div><h3 data-k="cardTitle" style="margin-bottom:.5rem"></h3><p class="muted" data-k="cardText" style="margin-bottom:1rem"></p>' +
+          '<a class="btn btn-primary" data-link target="_blank" rel="noopener"><span data-k="cta"></span></a></div></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Featured', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        setHtml(inner.querySelector('[data-k="cardTitle"]'), s.cardTitle || '', sec.id + '.cardTitle');
+        setHtml(inner.querySelector('[data-k="cardText"]'), s.cardText || '', sec.id + '.cardText');
+        setHtml(inner.querySelector('[data-k="cta"]'), s.cta || 'Open', sec.id + '.cta');
+        const img = inner.querySelector('[data-img]');
+        if (s.image) img.src = s.image; else img.style.display = 'none';
+        const link = inner.querySelector('[data-link]');
+        link.href = s.url || '#';
+        break;
+
+      case 'gallery':
+        renderGallerySection(inner, sec);
+        break;
+
+      case 'services':
+        inner.innerHTML = '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2><div class="grid-cards" data-cards></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Services', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        const cards = inner.querySelector('[data-cards]');
+        (s.items || []).forEach(function (it) {
+          const el = document.createElement('div');
+          el.className = 'service-card glass';
+          const feats = (it.features || []).map(function (f) { return '<li>' + renderMiniMarkdown(f) + '</li>'; }).join('');
+          el.innerHTML = '<h3>' + renderMiniMarkdown(it.title || '') + '</h3><div class="price">' + escapeHtml(it.price || '') + '</div><p class="muted" style="font-size:.85rem;margin-bottom:.5rem">' + renderMiniMarkdown(it.description || '') + '</p><ul>' + feats + '</ul>';
+          cards.appendChild(el);
+        });
+        break;
+
+      case 'terms':
+        inner.innerHTML = '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2><div data-list></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Terms', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        const list = inner.querySelector('[data-list]');
+        (s.items || []).forEach(function (it) {
+          const el = document.createElement('div');
+          el.className = 'term-card glass';
+          el.style.marginBottom = '.65rem';
+          el.innerHTML = '<h3 style="margin-bottom:.35rem">' + renderMiniMarkdown(it.title || '') + '</h3><p class="muted">' + renderMiniMarkdown(it.content || '') + '</p>';
+          list.appendChild(el);
+        });
+        break;
+
+      case 'testimonials':
+        inner.innerHTML = '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2><div class="grid-cards" data-cards></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Stories', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        const tc = inner.querySelector('[data-cards]');
+        (s.items || []).forEach(function (it) {
+          const el = document.createElement('div');
+          el.className = 't-card glass';
+          el.innerHTML = '<p style="margin-bottom:.75rem">"' + renderMiniMarkdown(it.quote || '') + '"</p><div class="muted" style="font-size:.7rem;letter-spacing:.1em;text-transform:uppercase">' + renderMiniMarkdown(it.name || '') + '</div>';
+          tc.appendChild(el);
+        });
+        break;
+
+      case 'contact':
+        inner.innerHTML =
+          '<div class="contact-grid"><div><p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2>' +
+          '<p class="muted" data-email></p><p class="muted" data-phone></p></div>' +
+          '<form class="glass" style="padding:1.2rem" data-form><label>Name</label><input name="name" required /><label>Email</label><input name="email" type="email" required />' +
+          '<label>Message</label><textarea name="message" rows="4"></textarea><button class="btn btn-primary" type="submit">Send</button></form></div>';
+        setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Contact', sec.id + '.label');
+        setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+        inner.querySelector('[data-email]').textContent = s.email || '';
+        inner.querySelector('[data-phone]').textContent = s.phone || '';
+        inner.querySelector('[data-form]').addEventListener('submit', function (e) {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          if (!s.email) return alert('No email configured');
+          location.href = 'mailto:' + s.email + '?subject=' + encodeURIComponent('Enquiry from ' + (fd.get('name') || '')) + '&body=' + encodeURIComponent(fd.get('message') || '');
+        });
+        break;
+
+      default:
+        inner.innerHTML = '<p class="muted">Unknown section type: ' + escapeHtml(sec.type) + '</p>';
+    }
+  }
+
+  function renderGallerySection(inner, sec) {
+    const s = sec.settings || {};
+    inner.innerHTML = '<p class="label" data-k="label"></p><h2 data-k="heading" style="font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:1rem"></h2><div class="cat-bar" data-cats></div><div class="gallery-grid" data-grid></div><p class="muted" data-empty style="display:none">No photos yet.</p>';
+    setHtml(inner.querySelector('[data-k="label"]'), s.label || 'Gallery', sec.id + '.label');
+    setHtml(inner.querySelector('[data-k="heading"]'), s.heading || '', sec.id + '.heading');
+    const cats = s.categories || [];
+    const catBar = inner.querySelector('[data-cats]');
+    const grid = inner.querySelector('[data-grid]');
+    const empty = inner.querySelector('[data-empty]');
+
+    function show(catName) {
+      grid.innerHTML = '';
+      let photos = [];
+      if (catName === '__all__') {
+        cats.forEach(function (c) { (c.photos || []).forEach(function (p) { photos.push(p); }); });
+      } else {
+        const c = cats.find(function (x) { return x.name === catName; });
+        photos = (c && c.photos) || [];
+      }
+      lightboxPhotos = photos;
+      catBar.querySelectorAll('.cat-btn').forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-cat') === catName);
+      });
+      if (!photos.length) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      photos.forEach(function (p, i) {
+        const card = document.createElement('div');
+        card.className = 'gallery-card';
+        card.innerHTML = '<img src="' + escapeHtml(p.url || '') + '" alt="" loading="lazy" /><div class="cap">' + escapeHtml(p.name || '') + '</div>';
+        card.onclick = function () { openLightbox(i); };
+        grid.appendChild(card);
+      });
+    }
+
+    if (cats.length > 1) {
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button'; allBtn.className = 'cat-btn active'; allBtn.textContent = 'All'; allBtn.setAttribute('data-cat', '__all__');
+      allBtn.onclick = function () { show('__all__'); };
+      catBar.appendChild(allBtn);
+    }
+    cats.forEach(function (c, i) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'cat-btn' + (cats.length === 1 ? ' active' : '');
+      b.textContent = c.name || ('Album ' + (i + 1));
+      b.setAttribute('data-cat', c.name);
+      b.onclick = function () { show(c.name); };
+      catBar.appendChild(b);
+    });
+    if (cats.length > 1) show('__all__');
+    else if (cats[0]) show(cats[0].name);
+    else empty.style.display = 'block';
+  }
+
+  function openLightbox(i) {
+    if (!lightboxPhotos.length) return;
+    const p = lightboxPhotos[(i + lightboxPhotos.length) % lightboxPhotos.length];
+    document.getElementById('lightboxImg').src = p.url || '';
+    document.getElementById('lightbox').classList.add('open');
+  }
+  document.getElementById('lightbox').onclick = function () {
+    document.getElementById('lightbox').classList.remove('open');
+  };
+
+  // Theme / nav / scroll
+  const themeSelect = document.getElementById('themeSelect');
+  const themeBtn = document.getElementById('themeBtn');
+
+  // Load saved theme on startup
+  try {
+    const savedTheme = localStorage.getItem('config-site-theme');
+    if (savedTheme) {
+      document.documentElement.className = ''; // Clear existing theme classes
+      if (savedTheme !== 'light' && savedTheme !== 'dark') {
+        document.documentElement.classList.add('theme-' + savedTheme);
+        themeSelect.value = savedTheme;
+      } else {
+        document.documentElement.classList.toggle('theme-light', savedTheme === 'light');
+      }
+    }
+  } catch (e) {}
+
+  themeBtn.onclick = function () {
+    document.documentElement.classList.toggle('theme-light');
+    const isLight = document.documentElement.classList.contains('theme-light');
+    try {
+      localStorage.setItem('config-site-theme', isLight ? 'light' : 'dark');
+      themeSelect.value = isLight ? 'light' : (isLight ? '' : 'dark');
+    } catch (e) {}
+  };
+
+  themeSelect.onchange = function () {
+    const selectedTheme = this.value;
+    document.documentElement.className = ''; // Clear all theme classes
+    if (selectedTheme === 'light') {
+      document.documentElement.classList.add('theme-light');
+      try { localStorage.setItem('config-site-theme', 'light'); } catch (e) {}
+    } else if (selectedTheme === 'dark') {
+      document.documentElement.classList.add('theme-light'); // Reset to dark default
+      try { localStorage.setItem('config-site-theme', 'dark'); } catch (e) {}
+    } else if (selectedTheme) {
+      document.documentElement.classList.add('theme-' + selectedTheme);
+      try { localStorage.setItem('config-site-theme', selectedTheme); } catch (e) {}
+    } else {
+      // Default (no theme)
+      try { localStorage.removeItem('config-site-theme'); } catch (e) {}
+    }
+  };
+
+  window.addEventListener('scroll', function () {
+    document.getElementById('siteNav').classList.toggle('scrolled', window.scrollY > 40);
+    document.getElementById('scrollTopBtn').classList.toggle('show', window.scrollY > 400);
+  });
+  document.getElementById('scrollTopBtn').onclick = function () { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  // Admin
+  const modal = document.getElementById('adminModal');
+  const pinStep = document.getElementById('pinStep');
+  const editorStep = document.getElementById('editorStep');
+  const adminFoot = document.getElementById('adminFoot');
+
+  document.getElementById('adminBtn').onclick = function () {
+    modal.classList.add('open');
+    pinStep.classList.remove('hidden');
+    editorStep.classList.add('hidden');
+    adminFoot.classList.add('hidden');
+    document.getElementById('pinError').classList.add('hidden');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('saveMsg').classList.add('hidden');
+  };
+  function closeAdmin() {
+    modal.classList.remove('open');
+    sessionToken = '';
+  }
+  document.getElementById('adminClose').onclick = closeAdmin;
+  document.getElementById('cancelBtn').onclick = closeAdmin;
+
+  document.getElementById('pinSubmit').onclick = async function () {
+    const password = document.getElementById('pinInput').value;
+    const pinError = document.getElementById('pinError');
+    const btn = document.getElementById('pinSubmit');
+    pinError.classList.add('hidden');
+    if (!password) { pinError.textContent = 'Enter password'; pinError.classList.remove('hidden'); return; }
+    btn.disabled = true; btn.textContent = 'Checking…';
+    try {
+      const res = await fetch(apiUrl('/api/site/' + encodeURIComponent(userId) + '/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: password }),
+      });
+      const result = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        pinError.textContent = result.error || 'Invalid credentials';
+        pinError.classList.remove('hidden');
+        sessionToken = '';
+        return;
+      }
+      sessionToken = result.sessionToken || '';
+      if (!sessionToken) {
+        pinError.textContent = 'Login succeeded but no session token returned';
+        pinError.classList.remove('hidden');
+        return;
+      }
+      pinStep.classList.add('hidden');
+      editorStep.classList.remove('hidden');
+      adminFoot.classList.remove('hidden');
+      fillAdmin();
+    } catch (e) {
+      pinError.textContent = 'Network error verifying password. Is API_BASE set?';
+      pinError.classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Unlock';
+    }
+  };
+
+  document.querySelectorAll('.tab').forEach(function (tab) {
+    tab.onclick = function () {
+      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+      document.querySelectorAll('.pane').forEach(function (p) { p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.querySelector('.pane[data-pane="' + tab.getAttribute('data-pane') + '"]').classList.add('active');
+    };
+  });
+
+  function fillAdmin() {
+    const meta = siteData.meta || {};
+    document.getElementById('editMetaTitle').value = meta.title || '';
+    document.getElementById('editMetaTagline').value = meta.tagline || '';
+    document.getElementById('editFooterTitle').value = meta.footerTitle || '';
+    document.getElementById('editFooterCopy').value = meta.footerCopyright || '';
+    document.getElementById('editLayoutPreset').value = meta.layoutPreset || '';
+    fillSectionsEditor();
+    fillTextsEditor();
+  }
+
+  function fillSectionsEditor() {
+    const root = document.getElementById('editSections');
+    root.innerHTML = '';
+    (siteData.sections || []).forEach(function (sec, index) {
+      const block = document.createElement('div');
+      block.className = 'list-block';
+      const typeOpts = SECTION_TYPES.map(function (t) {
+        return '<option value="' + t.value + '"' + (sec.type === t.value ? ' selected' : '') + '>' + t.label + '</option>';
+      }).join('');
+      block.innerHTML =
+        '<div style="display:flex;gap:.4rem;align-items:center;margin-bottom:.5rem">' +
+        '<strong style="flex:1;font-size:.8rem">#' + (index + 1) + ' <span class="muted">' + escapeHtml(sec.id) + '</span></strong>' +
+        '<button type="button" class="btn btn-ghost move-up" style="padding:.3rem .55rem">↑</button>' +
+        '<button type="button" class="btn btn-ghost move-down" style="padding:.3rem .55rem">↓</button>' +
+        '<button type="button" class="btn btn-ghost rm-sec" style="padding:.3rem .55rem">Remove</button></div>' +
+        '<label>Section type (replace element)</label>' +
+        '<select class="sec-type">' + typeOpts + '</select>' +
+        '<label>Settings (JSON)</label>' +
+        '<textarea class="sec-json" rows="6">' + escapeHtml(JSON.stringify(sec.settings || {}, null, 2)) + '</textarea>';
+      block.querySelector('.rm-sec').onclick = function () {
+        siteData.sections.splice(index, 1);
+        fillSectionsEditor();
+      };
+      block.querySelector('.move-up').onclick = function () {
+        if (index === 0) return;
+        var tmp = siteData.sections[index - 1];
+        siteData.sections[index - 1] = siteData.sections[index];
+        siteData.sections[index] = tmp;
+        fillSectionsEditor();
+      };
+      block.querySelector('.move-down').onclick = function () {
+        if (index >= siteData.sections.length - 1) return;
+        var tmp = siteData.sections[index + 1];
+        siteData.sections[index + 1] = siteData.sections[index];
+        siteData.sections[index] = tmp;
+        fillSectionsEditor();
+      };
+      block.querySelector('.sec-type').onchange = function (e) {
+        siteData.sections[index].type = e.target.value;
+      };
+      block.querySelector('.sec-json').onchange = function (e) {
+        try {
+          siteData.sections[index].settings = JSON.parse(e.target.value);
+          e.target.style.borderColor = '';
+        } catch (err) {
+          e.target.style.borderColor = '#f87171';
+        }
+      };
+      root.appendChild(block);
+    });
+  }
+
+  document.getElementById('addSection').onclick = function () {
+    siteData.sections.push({
+      id: 'sec' + Date.now().toString(36),
+      type: 'text',
+      settings: { label: 'New', heading: 'New *section*', body: 'Edit settings JSON or change type.' },
+    });
+    fillSectionsEditor();
+  };
+
+  function fillTextsEditor() {
+    const root = document.getElementById('editTexts');
+    root.innerHTML = '';
+    const keys = [
+      ['meta.title', 'Site title'],
+      ['meta.tagline', 'Tagline'],
+      ['meta.footerTitle', 'Footer title'],
+      ['meta.footerCopyright', 'Footer copyright'],
+    ];
+    (siteData.sections || []).forEach(function (sec) {
+      const s = sec.settings || {};
+      Object.keys(s).forEach(function (k) {
+        if (typeof s[k] === 'string' && k !== 'image' && k !== 'url' && !k.toLowerCase().includes('href') && k !== 'email' && k !== 'phone' && k !== 'whatsapp' && k !== 'instagram') {
+          keys.push([sec.id + '.' + k, sec.type + ' · ' + k]);
+        }
+      });
+    });
+    keys.forEach(function (pair) {
+      const key = pair[0];
+      const label = pair[1];
+      let value = '';
+      if (key.indexOf('meta.') === 0) value = (siteData.meta || {})[key.slice(5)] || '';
+      else {
+        const parts = key.split('.');
+        const sec = (siteData.sections || []).find(function (s) { return s.id === parts[0]; });
+        if (sec && sec.settings) value = sec.settings[parts[1]] || '';
+      }
+      if (siteData.texts && siteData.texts[key] != null) value = siteData.texts[key];
+      const st = (siteData.texts && siteData.texts['style:' + key]) || {};
+      const block = document.createElement('div');
+      block.className = 'list-block';
+      block.innerHTML =
+        '<label>' + escapeHtml(label) + '</label>' +
+        '<textarea class="text-val" data-key="' + escapeHtml(key) + '" rows="2">' + escapeHtml(value) + '</textarea>' +
+        '<div class="muted" style="font-size:.7rem;margin:.25rem 0">Preview: <span class="prev">' + renderMiniMarkdown(value) + '</span></div>' +
+        '<label>Text size</label>' +
+        '<input class="text-size" data-key="' + escapeHtml(key) + '" placeholder="e.g. 1.25rem" value="' + escapeHtml(st.fontSize || '') + '" />' +
+        '<label>Align</label>' +
+        '<select class="text-align" data-key="' + escapeHtml(key) + '">' +
+        '<option value="">Default</option>' +
+        '<option value="left"' + (st.textAlign === 'left' ? ' selected' : '') + '>Left</option>' +
+        '<option value="center"' + (st.textAlign === 'center' ? ' selected' : '') + '>Center</option>' +
+        '<option value="right"' + (st.textAlign === 'right' ? ' selected' : '') + '>Right</option></select>';
+      const ta = block.querySelector('.text-val');
+      const prev = block.querySelector('.prev');
+      ta.addEventListener('input', function () { prev.innerHTML = renderMiniMarkdown(ta.value); });
+      root.appendChild(block);
+    });
+  }
+
+  document.getElementById('saveBtn').onclick = async function () {
+    const msg = document.getElementById('saveMsg');
+    msg.classList.add('hidden');
+    // meta
+    siteData.meta = siteData.meta || {};
+    siteData.meta.title = document.getElementById('editMetaTitle').value.trim();
+    siteData.meta.tagline = document.getElementById('editMetaTagline').value.trim();
+    siteData.meta.footerTitle = document.getElementById('editFooterTitle').value.trim();
+    siteData.meta.footerCopyright = document.getElementById('editFooterCopy').value.trim();
+    siteData.meta.layoutPreset = document.getElementById('editLayoutPreset').value;
+
+    // re-read section JSON editors
+    const blocks = document.querySelectorAll('#editSections .list-block');
+    blocks.forEach(function (block, index) {
+      if (!siteData.sections[index]) return;
+      siteData.sections[index].type = block.querySelector('.sec-type').value;
+      try {
+        siteData.sections[index].settings = JSON.parse(block.querySelector('.sec-json').value);
+      } catch (e) {}
+    });
+
+    // texts
+    siteData.texts = siteData.texts || {};
+    document.querySelectorAll('#editTexts .text-val').forEach(function (ta) {
+      const key = ta.getAttribute('data-key');
+      siteData.texts[key] = ta.value;
+      // also write through to section settings / meta for consistency
+      if (key.indexOf('meta.') === 0) {
+        siteData.meta[key.slice(5)] = ta.value;
+      } else {
+        const parts = key.split('.');
+        const sec = (siteData.sections || []).find(function (s) { return s.id === parts[0]; });
+        if (sec && sec.settings && parts[1]) sec.settings[parts[1]] = ta.value;
+      }
+      const size = document.querySelector('#editTexts .text-size[data-key="' + key + '"]');
+      const align = document.querySelector('#editTexts .text-align[data-key="' + key + '"]');
+      siteData.texts['style:' + key] = {
+        fontSize: size ? size.value.trim() : '',
+        textAlign: align ? align.value : '',
+      };
+    });
+
+    try {
+      if (!sessionToken) {
+        msg.textContent = 'Session expired — unlock again';
+        msg.className = 'err';
+        msg.classList.remove('hidden');
+        return;
+      }
+      const res = await fetch(apiUrl('/api/site/' + encodeURIComponent(userId)), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + sessionToken,
+        },
+        body: JSON.stringify({ data: siteData }),
+      });
+      const result = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        msg.textContent = result.error || 'Save failed';
+        msg.className = 'err';
+        msg.classList.remove('hidden');
+        return;
+      }
+      renderAll();
+      msg.textContent = 'Saved & published';
+      msg.className = 'ok';
+      msg.classList.remove('hidden');
+      setTimeout(closeAdmin, 900);
+    } catch (e) {
+      msg.textContent = 'Network error';
+      msg.className = 'err';
+      msg.classList.remove('hidden');
+    }
+  };
+
+  loadSite();
+})();
+</script>
+</body>
+</html>
