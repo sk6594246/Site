@@ -15,6 +15,48 @@
   --font-h: 'Cinzel', serif; --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
   --radius: 16px; --pad: clamp(1.1rem, 4vw, 2rem); --section: clamp(3rem, 9vw, 6rem);
 }
+
+/* Density scaling variables */
+:root {
+  --density-scale: 1;
+  --font-size-scale: 1;
+}
+
+/* Density presets */
+body.density-compact {
+  --density-scale: 0.8;
+  --font-size-scale: 0.9;
+}
+body.density-medium {
+  --density-scale: 1;
+  --font-size-scale: 1;
+}
+body.density-loose {
+  --density-scale: 1.2;
+  --font-size-scale: 1.1;
+}
+
+/* Apply density scaling to spacing dimensions */
+:root {
+  --pad: clamp(1.1rem, 4vw, 2rem);
+  --pad-scaled: calc(var(--pad) * var(--density-scale));
+  --section: clamp(3rem, 9vw, 6rem);
+  --section-scaled: calc(var(--section) * var(--density-scale));
+  --radius: 16px;
+  --radius-scaled: calc(var(--radius) * var(--density-scale));
+  --gap: 1rem;
+  --gap-scaled: calc(var(--gap) * var(--density-scale));
+}
+
+/* Apply font scaling */
+:root {
+  --font-h: 'Cinzel', serif;
+  --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-scaled: calc(var(--font-size-base) * var(--font-size-scale));
+  --font-size-sm: calc(0.875rem * var(--font-size-scale));
+  --font-size-lg: calc(1.25rem * var(--font-size-scale));
+}
 html.theme-light {
   --bg: #f7f5f0; --card: rgba(255,255,255,.9); --border: rgba(0,0,0,.08);
   --gold: #9a741a; --gold-dim: rgba(154,116,26,.3); --text: #1a1a1a; --muted: #6e695f; --dim: #8a8478;
@@ -45,6 +87,93 @@ body.layout-landing .container { max-width: 1400px; }
 body.layout-portfolio .container { max-width: 1200px; }
 body.layout-business .container { max-width: 1000px; }
 body.layout-blog .container { max-width: 800px; }
+
+/* Density settings - using CSS variables for spacing and font scaling */
+:root {
+  --spacing-scale: 1;
+  --font-scale: 1;
+}
+
+/* Density presets */
+body.density-compact {
+  --spacing-scale: 0.8;
+  --font-scale: 0.9;
+}
+body.density-medium {
+  --spacing-scale: 1;
+  --font-scale: 1;
+}
+body.density-loose {
+  --spacing-scale: 1.2;
+  --font-scale: 1.1;
+}
+
+/* Apply density scales to spacing and sizing */
+.container {
+  padding: 0 calc(var(--pad) * var(--spacing-scale));
+}
+.section {
+  padding: calc(var(--section) * var(--spacing-scale)) 0;
+}
+.label {
+  font-size: calc(.7rem * var(--font-scale));
+  margin-bottom: calc(.5rem * var(--font-scale));
+}
+
+/* Apply to headings and brand elements */
+h1, h2, h3, .brand {
+  font-size: calc((1.5rem) * var(--font-scale)); /* Base size adjusted by scale */
+}
+
+/* Adjust hero section spacing */
+.hero {
+  min-height: calc(78vh * var(--spacing-scale));
+}
+
+/* Adjust button spacing */
+.btn {
+  padding: calc(.7rem * var(--spacing-scale)) calc(1.2rem * var(--spacing-scale));
+  font-size: calc(.75rem * var(--font-scale));
+}
+
+/* Adjust modal and card spacing */
+.glass {
+  padding: calc(1.25rem * var(--spacing-scale));
+}
+#adminPanel {
+  padding: calc(1.1rem * var(--spacing-scale));
+}
+
+/* Adjust form elements */
+input, textarea, select {
+  padding: calc(.65rem * var(--spacing-scale)) calc(.8rem * var(--spacing-scale));
+  margin-bottom: calc(.7rem * var(--spacing-scale));
+  font-size: calc(1rem * var(--font-scale));
+}
+
+/* Adjust hero content spacing */
+.hero-content {
+  margin-bottom: calc(1.2rem * var(--spacing-scale));
+}
+
+/* Adjust grid gaps */
+.grid-cards, .gallery-grid {
+  gap: calc(1rem * var(--spacing-scale));
+}
+
+/* Adjust footer */
+footer {
+  padding: calc(2.5rem * var(--spacing-scale)) 0 calc(5rem * var(--spacing-scale));
+}
+
+/* Adjust admin tabs and sections */
+.tabs {
+  margin-bottom: calc(1rem * var(--spacing-scale));
+}
+.list-block {
+  margin-bottom: calc(.65rem * var(--spacing-scale));
+  padding: calc(.75rem * var(--spacing-scale));
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--font-b); line-height: 1.6; min-height: 100vh; }
 h1,h2,h3,.brand { font-family: var(--font-h); letter-spacing: .03em; }
@@ -136,14 +265,6 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
       </a>
       <nav class="nav-links" id="navLinks"></nav>
       <button class="icon-btn" id="themeBtn" type="button" title="Theme">◐</button>
-      <select id="themeSelect" title="Color scheme">
-        <option value="">Default</option>
-        <option value="blue">Blue</option>
-        <option value="purple">Purple</option>
-        <option value="green">Green</option>
-        <option value="orange">Orange</option>
-        <option value="red">Red</option>
-      </select>
     </div>
   </header>
   <main id="mainSections"></main>
@@ -199,6 +320,21 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
             <option value="portfolio">Portfolio</option>
             <option value="business">Business</option>
             <option value="blog">Blog</option>
+          </select>
+          <label>Color scheme</label>
+          <select id="editColorScheme">
+            <option value="">Default (Dark)</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="green">Green</option>
+            <option value="orange">Orange</option>
+            <option value="red">Red</option>
+          </select>
+          <label>Density</label>
+          <select id="editDensity">
+            <option value="compact">Compact</option>
+            <option value="medium">Medium</option>
+            <option value="loose">Loose</option>
           </select>
           <p class="muted" style="margin-top:.5rem">Theme is toggled on the public page (saved in browser).</p>
         </div>
@@ -437,11 +573,20 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
     setHtml(document.getElementById('footerTitle'), t('meta.footerTitle', meta.footerTitle || 'SITE'), 'meta.footerTitle');
     setHtml(document.getElementById('footerCopy'), t('meta.footerCopyright', meta.footerCopyright || ''), 'meta.footerCopyright');
 
-    // Add layout preset class to body
+    // Add layout preset, density, and color scheme classes to body
     const layoutPreset = meta.layoutPreset || '';
+    const density = meta.density || 'medium';
+    const colorScheme = meta.colorScheme || '';
+
     document.body.className = '';
     if (layoutPreset) {
         document.body.classList.add('layout-' + layoutPreset);
+    }
+    if (density) {
+        document.body.classList.add('density-' + density);
+    }
+    if (colorScheme) {
+        document.body.classList.add('theme-' + colorScheme);
     }
 
     const main = document.getElementById('mainSections');
@@ -779,6 +924,8 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
     document.getElementById('editFooterTitle').value = meta.footerTitle || '';
     document.getElementById('editFooterCopy').value = meta.footerCopyright || '';
     document.getElementById('editLayoutPreset').value = meta.layoutPreset || '';
+    document.getElementById('editColorScheme').value = meta.colorScheme || '';
+    document.getElementById('editDensity').value = meta.density || 'medium';
     fillSectionsEditor();
     fillTextsEditor();
   }
@@ -904,6 +1051,8 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
     siteData.meta.footerTitle = document.getElementById('editFooterTitle').value.trim();
     siteData.meta.footerCopyright = document.getElementById('editFooterCopy').value.trim();
     siteData.meta.layoutPreset = document.getElementById('editLayoutPreset').value;
+    siteData.meta.colorScheme = document.getElementById('editColorScheme').value;
+    siteData.meta.density = document.getElementById('editDensity').value;
 
     // re-read section JSON editors
     const blocks = document.querySelectorAll('#editSections .list-block');
