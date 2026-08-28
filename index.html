@@ -14,10 +14,7 @@
   --gold: #e5c158; --gold-dim: rgba(229,193,88,.35); --text: #f0f3f8; --muted: #9aa4b5; --dim: #64748b;
   --font-h: 'Cinzel', serif; --font-b: 'Plus Jakarta Sans', system-ui, sans-serif;
   --radius: 16px; --pad: clamp(1.1rem, 4vw, 2rem); --section: clamp(3rem, 9vw, 6rem);
-}
-
-/* Density scaling variables */
-:root {
+  /* Density scaling - simplified */
   --density-scale: 1;
   --font-size-scale: 1;
 }
@@ -88,91 +85,72 @@ body.layout-portfolio .container { max-width: 1200px; }
 body.layout-business .container { max-width: 1000px; }
 body.layout-blog .container { max-width: 800px; }
 
-/* Density settings - using CSS variables for spacing and font scaling */
-:root {
-  --spacing-scale: 1;
-  --font-scale: 1;
-}
-
-/* Density presets */
-body.density-compact {
-  --spacing-scale: 0.8;
-  --font-scale: 0.9;
-}
-body.density-medium {
-  --spacing-scale: 1;
-  --font-scale: 1;
-}
-body.density-loose {
-  --spacing-scale: 1.2;
-  --font-scale: 1.1;
-}
 
 /* Apply density scales to spacing and sizing */
 .container {
-  padding: 0 calc(var(--pad) * var(--spacing-scale));
+  padding: 0 calc(var(--pad) * var(--density-scale));
 }
 .section {
-  padding: calc(var(--section) * var(--spacing-scale)) 0;
+  padding: calc(var(--section) * var(--density-scale)) 0;
 }
 .label {
-  font-size: calc(.7rem * var(--font-scale));
-  margin-bottom: calc(.5rem * var(--font-scale));
+  font-size: calc(.7rem * var(--font-size-scale));
+  margin-bottom: calc(.5rem * var(--font-size-scale));
 }
 
 /* Apply to headings and brand elements */
 h1, h2, h3, .brand {
-  font-size: calc((1.5rem) * var(--font-scale)); /* Base size adjusted by scale */
+  font-size: calc((1.5rem) * var(--font-size-scale)); /* Base size adjusted by scale */
 }
 
 /* Adjust hero section spacing */
 .hero {
-  min-height: calc(78vh * var(--spacing-scale));
+  min-height: calc(78vh * var(--density-scale));
 }
 
 /* Adjust button spacing */
 .btn {
-  padding: calc(.7rem * var(--spacing-scale)) calc(1.2rem * var(--spacing-scale));
-  font-size: calc(.75rem * var(--font-scale));
+  padding: calc(.7rem * var(--density-scale)) calc(1.2rem * var(--density-scale));
+  font-size: calc(.75rem * var(--font-size-scale));
 }
 
 /* Adjust modal and card spacing */
 .glass {
-  padding: calc(1.25rem * var(--spacing-scale));
+  padding: calc(1.25rem * var(--density-scale));
 }
 #adminPanel {
-  padding: calc(1.1rem * var(--spacing-scale));
+  padding: calc(1.1rem * var(--density-scale));
 }
 
 /* Adjust form elements */
 input, textarea, select {
-  padding: calc(.65rem * var(--spacing-scale)) calc(.8rem * var(--spacing-scale));
-  margin-bottom: calc(.7rem * var(--spacing-scale));
-  font-size: calc(1rem * var(--font-scale));
+  padding: calc(.65rem * var(--density-scale)) calc(.8rem * var(--density-scale));
+  margin-bottom: calc(.7rem * var(--density-scale));
+  font-size: calc(1rem * var(--font-size-scale));
 }
 
 /* Adjust hero content spacing */
 .hero-content {
-  margin-bottom: calc(1.2rem * var(--spacing-scale));
+  margin-bottom: calc(1.2rem * var(--density-scale));
 }
 
 /* Adjust grid gaps */
 .grid-cards, .gallery-grid {
-  gap: calc(1rem * var(--spacing-scale));
+  gap: calc(1rem * var(--density-scale));
 }
 
 /* Adjust footer */
 footer {
-  padding: calc(2.5rem * var(--spacing-scale)) 0 calc(5rem * var(--spacing-scale));
+  padding: calc(2.5rem * var(--density-scale)) 0 calc(5rem * var(--density-scale));
 }
 
 /* Adjust admin tabs and sections */
 .tabs {
-  margin-bottom: calc(1rem * var(--spacing-scale));
+  margin-bottom: calc(1rem * var(--density-scale));
 }
 .list-block {
-  margin-bottom: calc(.65rem * var(--spacing-scale));
-  padding: calc(.75rem * var(--spacing-scale));
+  margin-bottom: calc(.65rem * var(--density-scale));
+  padding: calc(.75rem * var(--density-scale));
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--font-b); line-height: 1.6; min-height: 100vh; }
@@ -800,45 +778,35 @@ footer { text-align: center; padding: 2.5rem 0 5rem; color: var(--dim); font-siz
   // Theme / nav / scroll
   const themeSelect = document.getElementById('themeSelect');
   const themeBtn = document.getElementById('themeBtn');
+// Removed themeSelect as it doesn't exist in HTML - using button-only theme toggle
 
   // Load saved theme on startup
   try {
     const savedTheme = localStorage.getItem('config-site-theme');
     if (savedTheme) {
-      document.documentElement.className = ''; // Clear existing theme classes
-      if (savedTheme !== 'light' && savedTheme !== 'dark') {
-        document.documentElement.classList.add('theme-' + savedTheme);
-        themeSelect.value = savedTheme;
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('theme-light');
+      } else if (savedTheme === 'dark') {
+        document.documentElement.classList.add('theme-dark');
       } else {
-        document.documentElement.classList.toggle('theme-light', savedTheme === 'light');
+        document.documentElement.classList.add('theme-' + savedTheme);
       }
     }
   } catch (e) {}
 
   themeBtn.onclick = function () {
-    document.documentElement.classList.toggle('theme-light');
+    // Toggle between light and dark themes
     const isLight = document.documentElement.classList.contains('theme-light');
-    try {
-      localStorage.setItem('config-site-theme', isLight ? 'light' : 'dark');
-      themeSelect.value = isLight ? 'light' : (isLight ? '' : 'dark');
-    } catch (e) {}
-  };
-
-  themeSelect.onchange = function () {
-    const selectedTheme = this.value;
     document.documentElement.className = ''; // Clear all theme classes
-    if (selectedTheme === 'light') {
+
+    if (isLight) {
+      // Switching from light to dark
+      document.documentElement.classList.add('theme-dark');
+      try { localStorage.setItem('config-site-theme', 'dark'); } catch (e) {}
+    } else {
+      // Switching from dark (or any other theme) to light
       document.documentElement.classList.add('theme-light');
       try { localStorage.setItem('config-site-theme', 'light'); } catch (e) {}
-    } else if (selectedTheme === 'dark') {
-      document.documentElement.classList.add('theme-light'); // Reset to dark default
-      try { localStorage.setItem('config-site-theme', 'dark'); } catch (e) {}
-    } else if (selectedTheme) {
-      document.documentElement.classList.add('theme-' + selectedTheme);
-      try { localStorage.setItem('config-site-theme', selectedTheme); } catch (e) {}
-    } else {
-      // Default (no theme)
-      try { localStorage.removeItem('config-site-theme'); } catch (e) {}
     }
   };
 
